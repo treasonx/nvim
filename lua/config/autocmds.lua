@@ -127,3 +127,23 @@ autocmd("BufWritePre", {
   end,
   desc = "Auto-create missing directories on save",
 })
+
+-- Fix syntax highlighting after session restore
+augroup("FixHighlightOnRestore", { clear = true })
+autocmd({ "SessionLoadPost", "BufEnter" }, {
+  group = "FixHighlightOnRestore",
+  pattern = "*",
+  callback = function()
+    -- Ensure filetype detection
+    vim.cmd("filetype detect")
+    
+    -- Reattach treesitter if available
+    local ok, ts = pcall(require, "nvim-treesitter")
+    if ok then
+      vim.defer_fn(function()
+        vim.cmd("TSBufEnable highlight")
+      end, 100)
+    end
+  end,
+  desc = "Fix highlighting after session restore",
+})
