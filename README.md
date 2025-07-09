@@ -197,3 +197,68 @@ See [CHEATSHEET.md](CHEATSHEET.md) for a comprehensive guide to all keybindings,
 - Editing enhancements (commenting, surround, etc.)
 
 **Leader key**: `Space`
+
+## IdeaVim Configuration Generator
+
+### Overview
+
+This configuration includes a Python script (`nvim-to-ideavimrc.py`) that converts your Neovim Lua configuration to an `.ideavimrc` file for use with the IdeaVim plugin in JetBrains IDEs (IntelliJ IDEA, PyCharm, WebStorm, etc.).
+
+### Usage
+
+1. **Generate the .ideavimrc file**:
+   ```bash
+   cd ~/.config/nvim
+   python3 nvim-to-ideavimrc.py
+   ```
+   This creates `~/.ideavimrc` in your home directory.
+
+2. **Install IdeaVim plugin** in your JetBrains IDE:
+   - Go to Settings → Plugins → Search for "IdeaVim" → Install
+
+3. **The IDE will automatically load** the `.ideavimrc` file on restart.
+
+### What Gets Converted
+
+The script performs a best-effort conversion of:
+
+- **Settings**: Line numbers, search options, indentation, scrolloff, etc.
+- **Key mappings**: Leader key, window navigation, buffer operations
+- **Vim commands → IDE actions**: Maps commands like `:bnext` to IntelliJ's tab navigation
+- **IdeaVim plugins**: Enables surround, commentary, which-key, and other compatible plugins
+
+### Additional IntelliJ-Specific Mappings
+
+The generated config includes IDE-specific shortcuts:
+- `<leader>ff` - Find files (Ctrl+Shift+N)
+- `<leader>fg` - Find in path (Ctrl+Shift+F)
+- `<leader>ca` - Show intention actions (Alt+Enter)
+- `gd` - Go to declaration
+- `gr` - Show usages
+- And more...
+
+### When to Update
+
+Run the conversion script again when you:
+- Add new key mappings to `keymaps.lua`
+- Change settings in `settings.lua`
+- Want to sync your IdeaVim config with Neovim changes
+
+### Limitations
+
+Some Neovim features cannot be converted:
+- Complex Lua expressions in mappings
+- Plugin-specific functionality (Telescope, nvim-tree, etc.)
+- Neovim-only features (LSP, Treesitter highlighting)
+- Custom Lua functions
+
+The script will show warnings for mappings it couldn't convert.
+
+### Customization
+
+After generation, you can manually edit `~/.ideavimrc` to:
+- Add more IntelliJ-specific actions
+- Adjust settings for IdeaVim behavior
+- Enable/disable IdeaVim plugins
+
+Find available IntelliJ actions: Help → Find Action → Track Action IDs
