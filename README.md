@@ -7,6 +7,8 @@ This is a modular Neovim configuration using Lua and the lazy.nvim plugin manage
 ```
 nvim/
 ├── init.lua                    # Entry point - loads config modules
+├── CHEATSHEET.md               # Quick reference for keybindings
+├── README.md                   # This file
 ├── lua/
 │   ├── config/                 # Core configuration modules
 │   │   ├── settings.lua        # Neovim options and settings
@@ -14,15 +16,16 @@ nvim/
 │   │   ├── autocmds.lua        # Autocommands for various events
 │   │   └── lazy.lua            # Plugin manager setup
 │   └── plugins/                # Plugin configurations (one file per plugin)
-│       ├── gitsigns.lua
-│       ├── lsp.lua
-│       ├── lualine.lua
-│       ├── nvim-tree.lua
-│       ├── peek.lua
-│       ├── telescope.lua
-│       ├── theme.lua
-│       ├── treesitter.lua
-│       └── whichkey.lua
+│       ├── editing.lua         # Editing enhancements (autopairs, comments, surround, etc.)
+│       ├── gitsigns.lua        # Git integration in buffers
+│       ├── lsp.lua             # Language Server Protocol configuration
+│       ├── lualine.lua         # Status line
+│       ├── nvim-tree.lua       # File explorer
+│       ├── session.lua         # Session management
+│       ├── telescope.lua       # Fuzzy finder
+│       ├── theme.lua           # Color scheme (Catppuccin)
+│       ├── treesitter.lua      # Syntax highlighting
+│       └── whichkey.lua        # Keybinding helper
 └── lazy-lock.json              # Plugin version lock file
 ```
 
@@ -104,12 +107,48 @@ nvim/
 - **Problem solved**: Discover and remember keybindings
 - **Configuration**: Shows popup with available keys after pressing leader
 
+### Editing Enhancements
+
+**Autopairs** (`lua/plugins/editing.lua`)
+- **Purpose**: Auto-close brackets, quotes, and other pairs
+- **Problem solved**: Reduces typing and ensures balanced delimiters
+- **Configuration**: Smart pairing with Treesitter integration, fast wrap with `<M-e>`
+
+**Comment.nvim** (`lua/plugins/editing.lua`)
+- **Purpose**: Smart commenting with context awareness
+- **Problem solved**: Quick code commenting/uncommenting with proper syntax
+- **Configuration**: `gcc` for line, `gbc` for block, `gc` in visual mode
+
+**Surround** (`lua/plugins/editing.lua`)
+- **Purpose**: Add, change, or delete surrounding pairs
+- **Problem solved**: Easily manipulate quotes, brackets, tags around text
+- **Configuration**: `ys` to add, `cs` to change, `ds` to delete surroundings
+
+**Leap** (`lua/plugins/editing.lua`)
+- **Purpose**: Lightning-fast cursor navigation
+- **Problem solved**: Jump to any visible location with minimal keystrokes
+- **Configuration**: `s`/`S` for forward/backward leap, `gs` for cross-window
+
+**Indent Blankline** (`lua/plugins/editing.lua`)
+- **Purpose**: Visual indent guides
+- **Problem solved**: See code structure and indentation levels at a glance
+- **Configuration**: Shows vertical lines for indentation levels
+
+### Session Management
+
+**Auto-session** (`lua/plugins/session.lua`)
+- **Purpose**: Automatic session persistence
+- **Problem solved**: Restore your workspace state between Neovim restarts
+- **Configuration**: Auto-saves on exit, auto-restores on startup for project directories
+- **Keymaps**:
+  - `<leader>Ss` - Search sessions
+  - `<leader>Sw` - Save session
+  - `<leader>Sr` - Restore session
+  - `<leader>Sd` - Delete session
+
 ### Writing Tools
 
-**Peek** (`lua/plugins/peek.lua`)
-- **Purpose**: Markdown preview
-- **Problem solved**: Live preview of Markdown files
-- **Configuration**: Opens preview in browser
+**Peek** (removed - not found in current config)
 
 **Spell Check** (integrated in `telescope.lua`)
 - **Purpose**: Spell checking with Telescope integration
@@ -131,11 +170,14 @@ nvim/
 3. Start Neovim - plugins will auto-install
 4. Run `:checkhealth` to verify setup
 
-## Common Tasks
+## Keybindings
 
-- **Find files**: `Space ff`
-- **Search text**: `Space fg`
-- **File tree**: `Space t`
-- **Spell check**: `Space z` (on misspelled word)
-- **LSP actions**: `Space l` prefix
-- **Git actions**: `Space g` prefix
+See [CHEATSHEET.md](CHEATSHEET.md) for a comprehensive guide to all keybindings, including:
+- Navigation & search commands
+- File and buffer management
+- LSP features and diagnostics
+- Git integration
+- Window and session management
+- Editing enhancements (commenting, surround, etc.)
+
+**Leader key**: `Space`
