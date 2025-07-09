@@ -130,20 +130,32 @@ autocmd("BufWritePre", {
 
 -- Fix syntax highlighting after session restore
 augroup("FixHighlightOnRestore", { clear = true })
-autocmd({ "SessionLoadPost", "BufEnter" }, {
+autocmd("SessionLoadPost", {
   group = "FixHighlightOnRestore",
   pattern = "*",
   callback = function()
-    -- Ensure filetype detection
-    vim.cmd("filetype detect")
-    
-    -- Reattach treesitter if available
-    local ok, ts = pcall(require, "nvim-treesitter")
-    if ok then
-      vim.defer_fn(function()
+    -- Defer to ensure session is fully loaded
+    vim.defer_fn(function()
+      -- Get all loaded buffers
+      local buffers = vim.api.nvim_list_bufs()
+      
+      for _, buf in ipairs(buffers) do
+        if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].buflisted then
+          -- Force filetype detection for each buffer
+          vim.api.nvim_buf_call(buf, function()
+            vim.cmd("filetype detect")
+            -- Manually trigger syntax highlighting
+            vim.cmd("syntax enable")
+          end)
+        end
+      end
+      
+      -- For the current buffer, ensure treesitter is attached
+      local ok, ts = pcall(require, "nvim-treesitter")
+      if ok then
         vim.cmd("TSBufEnable highlight")
-      end, 100)
-    end
+      end
+    end, 100)
   end,
   desc = "Fix highlighting after session restore",
 })
