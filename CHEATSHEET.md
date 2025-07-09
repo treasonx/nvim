@@ -5,6 +5,8 @@
 ## Key Mnemonics Guide
 
 ### Leader Key Prefixes
+- `a` = **A**utoswap parameters (treesitter)
+- `C` = **C**laude AI operations
 - `b` = **B**uffer operations
 - `d` = **D**iagnostics
 - `f` = **F**ind (files, text, help)
@@ -171,6 +173,30 @@
 | `<leader>wr` | Remove folder | Remove workspace folder | **W**orkspace **R**emove |
 | `<leader>wl` | List folders | List workspace folders | **W**orkspace **L**ist |
 
+## AI/Claude Code Integration
+
+### Claude Operations (C = Claude)
+| Key | Action | Description | Mnemonic |
+|-----|--------|-------------|----------|
+| `<leader>Cc` | Toggle Claude | Open/close Claude terminal | **C**laude **c**lose/open |
+| `<leader>Cf` | Focus Claude | Smart focus/toggle Claude | **C**laude **f**ocus |
+| `<leader>Cr` | Resume Claude | Resume previous conversation | **C**laude **r**esume |
+| `<leader>CC` | Continue Claude | Continue with --continue flag | **C**laude **C**ontinue |
+| `<leader>Cb` | Add buffer | Add current buffer to context | **C**laude **b**uffer |
+| `<leader>Cs` | Send to Claude | Send selection (visual) or add file (tree) | **C**laude **s**end |
+| `<leader>Ca` | Accept diff | Accept proposed changes | **C**laude **a**ccept |
+| `<leader>Cd` | Deny diff | Reject proposed changes | **C**laude **d**eny |
+
+### Claude Commands
+| Command | Action | Description |
+|---------|--------|-------------|
+| `:ClaudeCode` | Toggle window | Toggle Claude Code terminal |
+| `:ClaudeCodeFocus` | Smart focus | Focus or toggle Claude |
+| `:ClaudeCodeSend` | Send selection | Send visual selection |
+| `:ClaudeCodeAdd` | Add file | Add file to context |
+| `:ClaudeCodeDiffAccept` | Accept changes | Accept diff changes |
+| `:ClaudeCodeDiffDeny` | Reject changes | Reject diff changes |
+
 ## Toggles
 
 ### Toggle Settings (t = Toggle)
@@ -254,6 +280,12 @@
 | `<C-u>` | Scroll up | Half-page up (centered) |
 | `<M-e>` | Fast wrap | Quick surround with auto-pairs |
 
+### Parameter Swapping (Treesitter)
+| Key | Action | Description | Mnemonic |
+|-----|--------|-------------|----------|
+| `<leader>a` | Swap next | Swap with next parameter | **a**utoswap next |
+| `<leader>A` | Swap previous | Swap with previous parameter | **A**utoswap previous |
+
 ### Visual Mode
 | Key | Action | Description |
 |-----|--------|-------------|
@@ -290,6 +322,7 @@ Press `<leader>` and wait to see available keybindings for that prefix.
 5. **Leader groups actions**: `<leader>b` for buffers, `<leader>d` for diagnostics
 
 ### Remember by Groups
+- **Claude AI**: All start with `<leader>C` (capital)
 - **Finding**: All start with `<leader>f`
 - **Buffers**: All start with `<leader>b`
 - **Diagnostics**: All start with `<leader>d`

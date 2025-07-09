@@ -27,7 +27,8 @@ nvim/
 │       ├── telescope.lua       # Fuzzy finder
 │       ├── theme.lua           # Color scheme (Catppuccin)
 │       ├── treesitter.lua      # Syntax highlighting
-│       └── whichkey.lua        # Keybinding helper
+│       ├── whichkey.lua        # Keybinding helper
+│       └── claude-code.lua     # AI coding assistant integration
 └── lazy-lock.json              # Plugin version lock file
 ```
 
