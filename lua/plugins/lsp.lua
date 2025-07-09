@@ -50,10 +50,42 @@ return {
       -- Global LSP setup
       setup = function()
         vim.diagnostic.config({
-          virtual_text = true, -- Inline diagnostics
+          virtual_text = {
+            prefix = "●", -- Could be '■', '▎', 'x'
+            spacing = 4,
+          },
           signs = true, -- Gutter signs
           update_in_insert = false,
+          underline = true,
+          severity_sort = true,
+          float = {
+            focusable = false,
+            style = "minimal",
+            border = "rounded",
+            source = "always",
+            header = "",
+            prefix = "",
+          },
         })
+        
+        -- Customize diagnostic signs
+        local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+        for type, icon in pairs(signs) do
+          local hl = "DiagnosticSign" .. type
+          vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+        end
+        
+        -- Add border to hover and signature help
+        vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
+          vim.lsp.handlers.hover, {
+            border = "rounded",
+          }
+        )
+        vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
+          vim.lsp.handlers.signature_help, {
+            border = "rounded",
+          }
+        )
       end,
     }
 
@@ -128,19 +160,41 @@ return {
     opts.lspconfig.setup()
   end,
   keys = {
+    -- Standard LSP navigation (no leader key)
     {
-      "<leader>gd",
+      "gd",
       function()
         vim.lsp.buf.definition()
       end,
       desc = "Go to definition",
     },
     {
-      "<leader>gr",
+      "gD",
+      function()
+        vim.lsp.buf.declaration()
+      end,
+      desc = "Go to declaration",
+    },
+    {
+      "gr",
       function()
         vim.lsp.buf.references()
       end,
-      desc = "Find references",
+      desc = "Go to references",
+    },
+    {
+      "gi",
+      function()
+        vim.lsp.buf.implementation()
+      end,
+      desc = "Go to implementation",
+    },
+    {
+      "gy",
+      function()
+        vim.lsp.buf.type_definition()
+      end,
+      desc = "Go to type definition",
     },
     {
       "<leader>ca",
@@ -156,12 +210,41 @@ return {
       end,
       desc = "Rename symbol",
     },
+    -- Diagnostics
     {
-      "<leader>ds",
+      "<leader>d",
       function()
         vim.diagnostic.open_float()
       end,
-      desc = "Show diagnostics",
+      desc = "Show line diagnostics",
+    },
+    {
+      "<leader>dd",
+      function()
+        require("telescope.builtin").diagnostics()
+      end,
+      desc = "Show all diagnostics",
+    },
+    {
+      "[d",
+      function()
+        vim.diagnostic.goto_prev()
+      end,
+      desc = "Previous diagnostic",
+    },
+    {
+      "]d",
+      function()
+        vim.diagnostic.goto_next()
+      end,
+      desc = "Next diagnostic",
+    },
+    {
+      "<leader>dl",
+      function()
+        vim.diagnostic.setloclist()
+      end,
+      desc = "Diagnostics to location list",
     },
     {
       "K",
@@ -169,6 +252,42 @@ return {
         vim.lsp.buf.hover()
       end,
       desc = "Hover documentation",
+    },
+    {
+      "<C-h>",
+      function()
+        vim.lsp.buf.signature_help()
+      end,
+      mode = "i",
+      desc = "Signature help",
+    },
+    {
+      "<leader>wa",
+      function()
+        vim.lsp.buf.add_workspace_folder()
+      end,
+      desc = "Add workspace folder",
+    },
+    {
+      "<leader>wr",
+      function()
+        vim.lsp.buf.remove_workspace_folder()
+      end,
+      desc = "Remove workspace folder",
+    },
+    {
+      "<leader>wl",
+      function()
+        print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+      end,
+      desc = "List workspace folders",
+    },
+    {
+      "<leader>f",
+      function()
+        vim.lsp.buf.format({ async = true })
+      end,
+      desc = "Format buffer",
     },
   },
 }
