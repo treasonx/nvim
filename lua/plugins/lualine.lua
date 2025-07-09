@@ -3,13 +3,23 @@ return {
   version = "*",
   lazy = false,
   dependencies = { 
-    'nvim-tree/nvim-web-devicons'
+    'nvim-tree/nvim-web-devicons',
+    'catppuccin/nvim'
   },
   config = function()
-    local solarized_dark = require'lualine.themes.solarized_dark'
     require('lualine').setup {
       options = {
-        theme = solarized_dark
+          theme = "catppuccin", -- Use Catppuccin lualine theme
+          component_separators = { left = "", right = "" },
+          section_separators = { left = "", right = "" },
+        },
+      sections = {
+        lualine_a = { "mode" },
+        lualine_b = { "branch", "diff", "diagnostics" },
+        lualine_c = { "filename" },
+        lualine_x = { "encoding", "fileformat", "filetype" },
+        lualine_y = { "progress" },
+        lualine_z = { "location" },
       },
     }
   end,
