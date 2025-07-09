@@ -11,8 +11,16 @@ vim.cmd('syntax on')          -- Enable syntax highlighting
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+-- relative line numbers
+vim.opt.relativenumber = true
+vim.opt.number = true
+
 
 vim.keymap.set("n", "<leader>t", ":NvimTreeToggle<CR>", { desc = "Toggle NvimTree", noremap = true, silent = true })
+vim.keymap.set('n', '<leader>ff', ":Telescope find_files<CR>", { desc = 'Telescope find files' })
+vim.keymap.set('n', '<leader>fg', ":Telescope live_grep<CR>", { desc = 'Telescope live grep' })
+vim.keymap.set('n', '<leader>fb', ":Telescope buffers<CR>", { desc = 'Telescope buffers' })
+vim.keymap.set('n', '<leader>fh', ":Telescope help_tags<CR>", { desc = 'Telescope help tags' })
 -- Auto-open NvimTree on startup
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()

@@ -6,6 +6,11 @@ return {
     'nvim-tree/nvim-web-devicons'
   },
   config = function()
-    require('lualine').setup()
+    local solarized_dark = require'lualine.themes.solarized_dark'
+    require('lualine').setup {
+      options = {
+        theme = solarized_dark
+      },
+    }
   end,
 }
