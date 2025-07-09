@@ -52,15 +52,43 @@
 ### Buffer Operations (b = Buffer)
 | Key | Action | Description | Mnemonic |
 |-----|--------|-------------|----------|
-| `<leader>bb` | Browse buffers | List open buffers | **B**uffer **B**rowse |
+| `<leader>bb` | Browse buffers | Telescope fuzzy search buffers | **B**uffer **B**rowse |
 | `<leader>bd` | Delete buffer | Close current buffer | **B**uffer **D**elete |
 | `<leader>bD` | Force delete | Close without saving | **B**uffer **D**elete! |
 | `<leader>bn` | Next buffer | Go to next buffer | **B**uffer **N**ext |
 | `<leader>bp` | Previous buffer | Go to previous buffer | **B**uffer **P**revious |
+| `<leader>bl` | List buffers | Show numbered list to switch | **B**uffer **L**ist |
+| `<leader>bo` | Close others | Close all other buffers | **B**uffer **O**thers |
+| `<leader>br` | Close right | Close buffers to the right | **B**uffer **R**ight |
 | `<S-h>` | Previous buffer | Quick previous | Shift + h |
 | `<S-l>` | Next buffer | Quick next | Shift + l |
 | `[b` | Previous buffer | Bracket navigation | Previous |
 | `]b` | Next buffer | Bracket navigation | Next |
+| `<leader><leader>` | Alternate buffer | Toggle current/previous buffer | Quick toggle |
+| `<BS>` | Alternate buffer | Toggle current/previous buffer | Backspace |
+
+### BufferLine Visual Picker
+| Key | Action | Description | Mnemonic |
+|-----|--------|-------------|----------|
+| `<leader>bp` | Pick buffer | Show letters on buffers, press to jump | **B**uffer **P**ick |
+| `<leader>bc` | Pick to close | Show letters on buffers, press to close | **B**uffer **C**lose |
+| `<leader>bh` | Close left | Close all buffers to the left | **B**uffer **H** (left) |
+| `<leader>bl` | Close right | Close all buffers to the right | **B**uffer **L** (right) |
+| `<leader>bD` | Sort by directory | Sort buffers by directory | **B**uffer **D**irectory |
+| `<leader>bL` | Sort by language | Sort buffers by file extension | **B**uffer **L**anguage |
+
+### Quick Buffer Access
+| Key | Action | Description | Mnemonic |
+|-----|--------|-------------|----------|
+| `<leader>1` | Go to buffer 1 | Jump to buffer in position 1 | Direct access |
+| `<leader>2` | Go to buffer 2 | Jump to buffer in position 2 | Direct access |
+| `<leader>3` | Go to buffer 3 | Jump to buffer in position 3 | Direct access |
+| `<leader>4` | Go to buffer 4 | Jump to buffer in position 4 | Direct access |
+| `<leader>5` | Go to buffer 5 | Jump to buffer in position 5 | Direct access |
+| `<leader>6` | Go to buffer 6 | Jump to buffer in position 6 | Direct access |
+| `<leader>7` | Go to buffer 7 | Jump to buffer in position 7 | Direct access |
+| `<leader>8` | Go to buffer 8 | Jump to buffer in position 8 | Direct access |
+| `<leader>9` | Go to buffer 9 | Jump to buffer in position 9 | Direct access |
 
 ## Session Management
 
@@ -112,11 +140,11 @@
 ### Standard LSP Navigation (g = go)
 | Key | Action | Description | Mnemonic |
 |-----|--------|-------------|----------|
-| `gd` | Go to definition | Jump to definition | **g**o **d**efinition |
+| `gd` | Go to definition | Jump to definition (Telescope) | **g**o **d**efinition |
 | `gD` | Go to declaration | Jump to declaration | **g**o **D**eclaration |
-| `gr` | Go to references | Find all references | **g**o **r**eferences |
-| `gi` | Go to implementation | Jump to implementation | **g**o **i**mplementation |
-| `gy` | Go to type definition | Jump to type definition | **g**o t**y**pe |
+| `gr` | Go to references | Find all references (Telescope) | **g**o **r**eferences |
+| `gi` | Go to implementation | Jump to implementation (Telescope) | **g**o **i**mplementation |
+| `gy` | Go to type definition | Jump to type definition (Telescope) | **g**o t**y**pe |
 | `K` | Hover | Show hover information | **K**nowledge |
 
 ### LSP Actions

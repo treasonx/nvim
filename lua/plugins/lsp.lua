@@ -164,7 +164,7 @@ return {
     {
       "gd",
       function()
-        vim.lsp.buf.definition()
+        require("telescope.builtin").lsp_definitions()
       end,
       desc = "Go to definition",
     },
@@ -178,21 +178,21 @@ return {
     {
       "gr",
       function()
-        vim.lsp.buf.references()
+        require("telescope.builtin").lsp_references()
       end,
       desc = "Go to references",
     },
     {
       "gi",
       function()
-        vim.lsp.buf.implementation()
+        require("telescope.builtin").lsp_implementations()
       end,
       desc = "Go to implementation",
     },
     {
       "gy",
       function()
-        vim.lsp.buf.type_definition()
+        require("telescope.builtin").lsp_type_definitions()
       end,
       desc = "Go to type definition",
     },

@@ -27,6 +27,16 @@ keymap("n", "<leader>bn", ":bnext<CR>", { desc = "Next buffer" })
 keymap("n", "<leader>bp", ":bprevious<CR>", { desc = "Previous buffer" })
 keymap("n", "<leader>bb", ":Telescope buffers<CR>", { desc = "Browse buffers" })
 
+-- Jump to alternate buffer (last used)
+keymap("n", "<leader><leader>", "<C-^>", { desc = "Switch to alternate buffer" })
+keymap("n", "<BS>", "<C-^>", { desc = "Switch to alternate buffer" })
+
+-- Smart buffer navigation
+local buffer_nav = require("config.buffer-navigation")
+keymap("n", "<leader>bl", buffer_nav.list_and_switch_buffer, { desc = "List and switch buffers" })
+keymap("n", "<leader>bo", buffer_nav.close_other_buffers, { desc = "Close other buffers" })
+keymap("n", "<leader>br", buffer_nav.close_buffers_to_right, { desc = "Close buffers to right" })
+
 -- Stay in indent mode
 keymap("v", "<", "<gv", { desc = "Indent left and reselect" })
 keymap("v", ">", ">gv", { desc = "Indent right and reselect" })

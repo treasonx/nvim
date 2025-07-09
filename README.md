@@ -14,8 +14,10 @@ nvim/
 │   │   ├── settings.lua        # Neovim options and settings
 │   │   ├── keymaps.lua         # Global keymaps
 │   │   ├── autocmds.lua        # Autocommands for various events
-│   │   └── lazy.lua            # Plugin manager setup
+│   │   ├── lazy.lua            # Plugin manager setup
+│   │   └── buffer-navigation.lua # Smart buffer navigation functions
 │   └── plugins/                # Plugin configurations (one file per plugin)
+│       ├── bufferline.lua      # Visual buffer tabs at top
 │       ├── editing.lua         # Editing enhancements (autopairs, comments, surround, etc.)
 │       ├── gitsigns.lua        # Git integration in buffers
 │       ├── lsp.lua             # Language Server Protocol configuration
@@ -40,8 +42,10 @@ nvim/
 ### Keymaps (`lua/config/keymaps.lua`)
 - Leader key: **Space**
 - Window navigation: `<C-h/j/k/l>`
-- Buffer navigation: `<S-h/l>`
+- Buffer navigation: `<S-h/l>`, `[b/]b`
+- Alternate buffer: `<leader><leader>` or `<BS>`
 - Split management: `<leader>s{v,h,e,x}`
+- Smart buffer functions: `<leader>bl` (list), `<leader>bo` (close others)
 
 ### Autocmds (`lua/config/autocmds.lua`)
 - Highlight yanked text
@@ -64,12 +68,13 @@ nvim/
 **Telescope** (`lua/plugins/telescope.lua`)
 - **Purpose**: Fuzzy finder for files, text, and more
 - **Problem solved**: Quickly find and open files, search content, navigate symbols
-- **Configuration**: Custom layout, hidden files support, integrated spell suggestions
+- **Configuration**: Custom layout, hidden files support, integrated spell suggestions, LSP navigation
 - **Keymaps**: 
   - `<leader>ff` (find files)
   - `<leader>fg` (live grep)
-  - `<leader>fb` (buffers)
+  - `<leader>bb` (buffers)
   - `<leader>z` (spell suggestions)
+  - `gd`, `gr`, `gi`, `gy` (LSP navigation with Telescope)
 
 ### Git Integration
 
@@ -83,7 +88,7 @@ nvim/
 **LSP** (`lua/plugins/lsp.lua`)
 - **Purpose**: Language Server Protocol support
 - **Problem solved**: IDE features like auto-completion, go-to-definition, diagnostics
-- **Configuration**: Mason for LSP management, auto-format on save, diagnostic keymaps
+- **Configuration**: Mason for LSP management, diagnostic keymaps, Telescope integration for navigation
 
 **Treesitter** (`lua/plugins/treesitter.lua`)
 - **Purpose**: Advanced syntax highlighting and code understanding
@@ -91,6 +96,16 @@ nvim/
 - **Configuration**: Auto-install parsers, enable highlighting and indentation
 
 ### UI Enhancements
+
+**BufferLine** (`lua/plugins/bufferline.lua`)
+- **Purpose**: Visual buffer tabs at the top of the window
+- **Problem solved**: See all open buffers at a glance, easy navigation between multiple files
+- **Configuration**: Shows buffer numbers, modified indicators, diagnostics, file icons
+- **Keymaps**:
+  - `<leader>bp` (visual picker to jump)
+  - `<leader>bc` (visual picker to close)
+  - `<leader>1-9` (jump to buffer by position)
+  - `<S-h/l>` (cycle through buffers)
 
 **Lualine** (`lua/plugins/lualine.lua`)
 - **Purpose**: Statusline
