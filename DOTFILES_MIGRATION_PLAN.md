@@ -16,7 +16,7 @@ This plan outlines the migration from your current well-organized Neovim configu
 - **Structure**: XDG-compliant, modular, multi-tool configuration
 - **Management**: Automated with GNU Stow and Make
 - **Theming**: Neovim-driven theme propagation to all system tools
-- **Scope**: All system configurations (shell, git, tmux, etc.)
+- **Scope**: All system configurations (zsh, git, kitty, etc.)
 
 ---
 
@@ -43,6 +43,11 @@ This plan outlines the migration from your current well-organized Neovim configu
 - **Purpose**: Neovim-driven automatic theme synchronization across all tools
 - **Components**: Neovim autocmds + shell scripts for theme mapping
 - **Benefits**: Keep your existing themes, Neovim stays primary
+
+#### 5. Standardized Key Mappings
+- **Philosophy**: Neovim keybindings as the source of truth across all tools
+- **Consistency**: `<C-hjkl>` navigation, `<S-hl>` for next/prev, `<leader>` patterns
+- **Benefits**: Muscle memory works everywhere, reduced cognitive load
 
 ### Alternative Tools (for reference)
 
@@ -108,23 +113,17 @@ This plan outlines the migration from your current well-organized Neovim configu
 │   ├── git/
 │   │   ├── config               # ~/.config/git/config
 │   │   └── ignore               # ~/.config/git/ignore
-│   ├── tmux/
-│   │   └── tmux.conf            # ~/.config/tmux/tmux.conf (theme-aware)
 │   ├── zsh/
 │   │   ├── zshrc                # ~/.config/zsh/.zshrc
 │   │   ├── zshenv               # ~/.config/zsh/.zshenv
 │   │   └── aliases              # ~/.config/zsh/aliases
-│   ├── bash/
-│   │   ├── bashrc               # ~/.config/bash/bashrc
-│   │   └── aliases              # ~/.config/bash/aliases
-│   ├── alacritty/
-│   │   └── alacritty.yml        # ~/.config/alacritty/alacritty.yml (theme-aware)
 │   ├── kitty/
 │   │   └── kitty.conf           # ~/.config/kitty/kitty.conf (theme-aware)
 │   └── fontconfig/
 │       └── fonts.conf           # ~/.config/fontconfig/fonts.conf
 ├── 
 ├── home/                        # Home directory dotfiles (~/)
+│   ├── .zshenv                  # ~/.zshenv (points to XDG config)
 │   ├── .profile                 # ~/.profile
 │   ├── .inputrc                 # ~/.inputrc
 │   ├── .gemrc                   # ~/.gemrc
@@ -140,7 +139,8 @@ This plan outlines the migration from your current well-organized Neovim configu
 ├── templates/                   # Template files for customization
 │   ├── gitconfig.template       # Git config template
 │   ├── ssh_config.template      # SSH config template
-│   └── env.template             # Environment variables template
+│   ├── env.template             # Environment variables template
+│   └── zshrc.local.template     # Local zsh config template (sensitive data)
 ├── 
 └── host-specific/               # Machine-specific configurations
     ├── work/                    # Work machine overrides
@@ -153,6 +153,70 @@ This plan outlines the migration from your current well-organized Neovim configu
         ├── config/
         └── home/
 ```
+
+---
+
+## Standardized Key Mapping Philosophy
+
+This dotfiles setup implements **Neovim-centric key mappings** across all tools for maximum consistency and muscle memory efficiency.
+
+### Core Principles
+
+1. **Neovim as Source of Truth**: All key mappings derive from your Neovim configuration
+2. **Consistent Navigation**: `<C-hjkl>` for directional movement everywhere
+3. **Universal Patterns**: `<S-hl>` for next/previous, `<leader>` for complex operations
+4. **No Conflicts**: Terminal and Neovim bindings complement each other
+
+### Key Mapping Standards
+
+#### Navigation (Universal)
+- **`<C-h>`** → Move left (windows, panes, etc.)
+- **`<C-j>`** → Move down
+- **`<C-k>`** → Move up  
+- **`<C-l>`** → Move right
+
+#### Next/Previous (Universal)
+- **`<S-h>`** → Previous (buffers, tabs, etc.)
+- **`<S-l>`** → Next (buffers, tabs, etc.)
+
+#### System Operations
+- **`<C-s>`** → Save (disabled in terminal to avoid conflicts)
+- **`q`** → Quick quit (shell alias matches `<leader>q`)
+- **`e`** → Quick edit (shell alias matches editor preference)
+
+#### Split/Window Management
+- **`<C-S-v>`** → Vertical split
+- **`<C-S-s>`** → Horizontal split  
+- **`<C-S-x>`** → Close window/split
+
+#### Copy/Paste (System)
+- **`<C-S-c>`** → Copy to system clipboard
+- **`<C-S-v>`** → Paste from system clipboard
+
+### Tool-Specific Implementation
+
+#### Kitty Terminal
+- Inherits all navigation patterns from Neovim
+- Tab management mirrors buffer navigation
+- Window splits use same keybinds as Neovim
+
+#### Zsh Aliases  
+- `q` = `exit` (matches `<leader>q` quit pattern)
+- `e` = `nvim` (matches editor preference)
+- `reload` = source config (matches config reload patterns)
+
+#### Git Aliases
+- Consistent with Oh My Zsh git plugin
+- Short, memorable patterns (`gs`, `ga`, `gc`, `gp`)
+- Match common Neovim git integration bindings
+
+### Benefits
+
+✅ **Unified Experience**: Same muscle memory across all tools  
+✅ **Reduced Cognitive Load**: No need to remember different keybinds per tool  
+✅ **Neovim-First**: Your primary editor drives the entire system  
+✅ **Conflict-Free**: Careful design prevents terminal/editor conflicts  
+✅ **Extensible**: Easy to add new tools following the same patterns  
 
 ---
 
@@ -195,6 +259,18 @@ cat > .gitignore << 'EOF'
 .env.local
 .env.*.local
 
+# Local configuration files with sensitive data
+config/zsh/zshrc.local
+**/zshrc.local
+*.local
+
+# SSH keys and config
+config/ssh/config
+home/.ssh/
+
+# GPG keys
+home/.gnupg/
+
 # OS generated files
 .DS_Store
 .DS_Store?
@@ -217,6 +293,13 @@ Thumbs.db
 
 # Log files
 *.log
+
+# Zsh history and cache
+config/zsh/.zsh_history
+config/zsh/.zcompdump*
+
+# Oh My Zsh installation (managed separately)
+oh-my-zsh/
 EOF
 
 # Create .stow-global-ignore
@@ -275,123 +358,219 @@ fi
 
 #### Step 5: Add Shell Configuration
 ```bash
-# Bash configuration
-mkdir -p ~/.dotfiles/config/bash
-cp ~/.bashrc ~/.dotfiles/config/bash/bashrc 2>/dev/null || cat > ~/.dotfiles/config/bash/bashrc << 'EOF'
-# ~/.config/bash/bashrc
+# Zsh configuration with Oh My Zsh support
+mkdir -p ~/.dotfiles/config/zsh
+
+# Create base zshrc (without sensitive data)
+cat > ~/.dotfiles/config/zsh/zshrc << 'EOF'
+# ~/.config/zsh/.zshrc
+
+# XDG Base Directory Specification
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
 
 # History settings
 HISTSIZE=10000
-HISTFILESIZE=20000
-HISTCONTROL=ignoredups:ignorespace
-shopt -s histappend
+SAVEHIST=10000
+HISTFILE=~/.config/zsh/.zsh_history
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
+setopt APPEND_HISTORY
 
-# Make less more friendly for non-text input files
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+# Oh My Zsh configuration
+export ZSH="$HOME/.oh-my-zsh"
 
-# Colored prompt
-if [ -n "$force_color_prompt" ] || [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-    PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-else
-    PS1='\u@\h:\w\$ '
+# Theme (can be overridden in local config)
+ZSH_THEME="robbyrussell"
+
+# Plugins
+plugins=(
+    git
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+    colored-man-pages
+    history-substring-search
+)
+
+# Load Oh My Zsh
+source $ZSH/oh-my-zsh.sh
+
+# Load aliases
+if [[ -f ~/.config/zsh/aliases ]]; then
+    source ~/.config/zsh/aliases
 fi
 
-# Aliases
-if [ -f ~/.config/bash/aliases ]; then
-    . ~/.config/bash/aliases
+# Load local configuration (for sensitive data, machine-specific settings)
+if [[ -f ~/.config/zsh/zshrc.local ]]; then
+    source ~/.config/zsh/zshrc.local
 fi
 EOF
 
-# Common aliases
-cat > ~/.dotfiles/config/bash/aliases << 'EOF'
-# ~/.config/bash/aliases
+# Create zshenv for environment setup
+cat > ~/.dotfiles/config/zsh/zshenv << 'EOF'
+# ~/.config/zsh/.zshenv
 
-# Navigation
+# XDG Base Directory Specification
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
+
+# Set ZDOTDIR to use XDG config
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+
+# Path modifications
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
+EOF
+
+# Common aliases
+cat > ~/.dotfiles/config/zsh/aliases << 'EOF'
+# ~/.config/zsh/aliases
+
+# Navigation (consistent with Neovim movement)
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 alias ~='cd ~'
 
-# Listing
+# Listing (consistent patterns)
 alias ll='ls -alF'
-alias la='ls -A'
+alias la='ls -A' 
 alias l='ls -CF'
 alias ls='ls --color=auto'
 
-# Git shortcuts
+# Git shortcuts (matches Neovim git plugin patterns)
 alias gs='git status'
 alias ga='git add'
 alias gc='git commit'
 alias gp='git push'
 alias gl='git log --oneline --graph --decorate'
+alias gd='git diff'
+alias gb='git branch'
+alias gco='git checkout'
 
-# Safety
+# Safety (interactive confirmations)
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
 
-# Nvim
+# Editor (consistent with Neovim as primary)
 alias vim='nvim'
 alias vi='nvim'
+alias e='nvim'  # Quick edit (matches leader+e pattern)
+
+# Configuration editing (matches Neovim config patterns)
+alias zshconfig="nvim ~/.config/zsh/.zshrc"
+alias nvimconfig="nvim ~/.config/nvim/"
+alias kittyconfig="nvim ~/.config/kitty/kitty.conf"
+
+# System operations (consistent with Neovim save/quit patterns)
+alias q='exit'  # Quick quit (matches leader+q)
+alias reload='source ~/.config/zsh/.zshrc'  # Reload config
+
+# Directory operations (matches Neovim buffer operations)  
+alias md='mkdir -p'  # Make directory
+alias rd='rmdir'     # Remove directory
+
+# Process management (consistent with Neovim patterns)
+alias ps='ps aux'
+alias k='kill'
+alias ka='killall'
+
+# Oh My Zsh specific
+alias ohmyzsh="nvim ~/.oh-my-zsh"
+EOF
+
+# Create template for local configuration (not tracked in git)
+cat > ~/.dotfiles/templates/zshrc.local.template << 'EOF'
+# ~/.config/zsh/zshrc.local
+# This file is for machine-specific and sensitive configuration
+# Copy this template to ~/.config/zsh/zshrc.local and customize
+
+# API Keys and sensitive environment variables
+# export OPENAI_API_KEY="your-key-here"
+# export GITHUB_TOKEN="your-token-here"
+# export AWS_ACCESS_KEY_ID="your-key-here"
+# export AWS_SECRET_ACCESS_KEY="your-secret-here"
+
+# Machine-specific paths
+# export PATH="$HOME/custom-tools/bin:$PATH"
+
+# Work-specific configuration
+# alias work-vpn="sudo openvpn /path/to/work.ovpn"
+
+# Personal aliases and functions
+# alias myserver="ssh user@my-server.com"
+
+# Override Oh My Zsh theme if desired
+# ZSH_THEME="powerlevel10k/powerlevel10k"
+
+# Additional plugins for this machine
+# plugins+=(docker kubectl)
+EOF
+
+echo "Created zshrc.local template at ~/.dotfiles/templates/zshrc.local.template"
+echo "Copy this to ~/.config/zsh/zshrc.local and add your sensitive configuration"
+
+# Create home directory .zshenv that points to XDG config
+cat > ~/.dotfiles/home/.zshenv << 'EOF'
+# ~/.zshenv - Set ZDOTDIR to use XDG config
+export ZDOTDIR="$HOME/.config/zsh"
 EOF
 ```
 
-#### Step 6: Add Terminal Configuration (if using Alacritty)
+#### Step 6: Add Terminal Configuration (if using Kitty)
 ```bash
-# Alacritty configuration (if you use it)
-mkdir -p ~/.dotfiles/config/alacritty
-if [ -f ~/.config/alacritty/alacritty.yml ]; then
-    cp ~/.config/alacritty/alacritty.yml ~/.dotfiles/config/alacritty/
+# Kitty configuration (if you use it)
+mkdir -p ~/.dotfiles/config/kitty
+if [ -f ~/.config/kitty/kitty.conf ]; then
+    cp ~/.config/kitty/kitty.conf ~/.dotfiles/config/kitty/
 else
-    cat > ~/.dotfiles/config/alacritty/alacritty.yml << 'EOF'
-# ~/.config/alacritty/alacritty.yml
+    cat > ~/.dotfiles/config/kitty/kitty.conf << 'EOF'
+# ~/.config/kitty/kitty.conf
 
-window:
-  padding:
-    x: 10
-    y: 10
+# Font configuration
+font_family JetBrains Mono
+font_size 13.0
 
-font:
-  normal:
-    family: "JetBrains Mono"
-    style: Regular
-  size: 13.0
+# Theme (Catppuccin Mocha)
+include themes/Catppuccin-Mocha.conf
 
-colors:
-  primary:
-    background: '#1e1e2e'
-    foreground: '#cdd6f4'
+# Window settings
+window_padding_width 10
+remember_window_size yes
 
-  cursor:
-    text: '#1e1e2e'
-    cursor: '#f5e0dc'
+# Key bindings (consistent with Neovim)
+# Copy/Paste (matches system clipboard bindings)
+map ctrl+shift+c copy_to_clipboard
+map ctrl+shift+v paste_from_clipboard
 
-  normal:
-    black: '#45475a'
-    red: '#f38ba8'
-    green: '#a6e3a1'
-    yellow: '#f9e2af'
-    blue: '#89b4fa'
-    magenta: '#f5c2e7'
-    cyan: '#94e2d5'
-    white: '#bac2de'
+# Font size (matches Neovim font controls)  
+map ctrl+plus change_font_size all +2.0
+map ctrl+minus change_font_size all -2.0
+map ctrl+0 change_font_size all 0
 
-  bright:
-    black: '#585b70'
-    red: '#f38ba8'
-    green: '#a6e3a1'
-    yellow: '#f9e2af'
-    blue: '#89b4fa'
-    magenta: '#f5c2e7'
-    cyan: '#94e2d5'
-    white: '#a6adc8'
+# Save (matches Neovim <C-s>)
+map ctrl+s no_op
 
-key_bindings:
-  - { key: V, mods: Control|Shift, action: Paste }
-  - { key: C, mods: Control|Shift, action: Copy }
-  - { key: Plus, mods: Control, action: IncreaseFontSize }
-  - { key: Minus, mods: Control, action: DecreaseFontSize }
-  - { key: Key0, mods: Control, action: ResetFontSize }
+# Tab management (consistent with Neovim buffer navigation)
+map ctrl+shift+t new_tab
+map shift+l next_tab
+map shift+h previous_tab
+map ctrl+shift+q close_tab
+
+# Window navigation (matches Neovim <C-hjkl>)
+map ctrl+h neighboring_window left
+map ctrl+j neighboring_window down  
+map ctrl+k neighboring_window up
+map ctrl+l neighboring_window right
+
+# Split management (matches Neovim leader+s bindings)
+map ctrl+shift+v launch --location=vsplit
+map ctrl+shift+s launch --location=hsplit
+map ctrl+shift+x close_window
 EOF
 fi
 ```
@@ -514,16 +693,18 @@ backup_existing() {
     
     # List of files to backup
     FILES_TO_BACKUP=(
-        ".bashrc"
+        ".zshrc"
+        ".zshenv"
         ".profile"
         ".inputrc"
         ".gitconfig"
         ".gitignore_global"
         ".config/git/config"
         ".config/git/ignore"
-        ".config/alacritty/alacritty.yml"
-        ".config/bash/bashrc"
-        ".config/bash/aliases"
+        ".config/kitty/kitty.conf"
+        ".config/zsh/zshrc"
+        ".config/zsh/zshenv"
+        ".config/zsh/aliases"
     )
     
     for file in "${FILES_TO_BACKUP[@]}"; do
@@ -548,8 +729,17 @@ main() {
     log_info "Running stow..."
     make stow
     
+    log_info "Setting up local configuration..."
+    # Create local zsh config for sensitive data
+    mkdir -p "$HOME/.config/zsh"
+    if [ ! -f "$HOME/.config/zsh/zshrc.local" ]; then
+        cp "$HOME/.dotfiles/templates/zshrc.local.template" "$HOME/.config/zsh/zshrc.local"
+        log_info "Created local zsh config template at ~/.config/zsh/zshrc.local"
+    fi
+    
     log_info "Installation complete!"
     log_info "Backup created for any existing files"
+    log_info "IMPORTANT: Edit ~/.config/zsh/zshrc.local to add your API keys and sensitive settings"
     log_info "You may need to restart your shell or source your new configurations"
 }
 
@@ -576,7 +766,8 @@ echo "Creating backup at: $BACKUP_DIR"
 
 # Files to backup
 FILES=(
-    ".bashrc"
+    ".zshrc"
+    ".zshenv"
     ".profile"
     ".inputrc"
     ".gitconfig"
@@ -587,9 +778,10 @@ FILES=(
 CONFIG_FILES=(
     ".config/git/config"
     ".config/git/ignore"
-    ".config/alacritty/alacritty.yml"
-    ".config/bash/bashrc"
-    ".config/bash/aliases"
+    ".config/kitty/kitty.conf"
+    ".config/zsh/zshrc"
+    ".config/zsh/zshenv"
+    ".config/zsh/aliases"
 )
 
 # Backup home directory files
@@ -706,33 +898,21 @@ local theme_sync_group = vim.api.nvim_create_augroup("ThemeSync", {clear = true}
 -- Map Neovim colorschemes to external tool themes
 local theme_mappings = {
   ["catppuccin-mocha"] = {
-    alacritty = "catppuccin-mocha",
-    tmux = "catppuccin_mocha",
     kitty = "Catppuccin-Mocha"
   },
   ["catppuccin-latte"] = {
-    alacritty = "catppuccin-latte", 
-    tmux = "catppuccin_latte",
     kitty = "Catppuccin-Latte"
   },
   ["catppuccin-frappe"] = {
-    alacritty = "catppuccin-frappe",
-    tmux = "catppuccin_frappe", 
     kitty = "Catppuccin-Frappe"
   },
   ["catppuccin-macchiato"] = {
-    alacritty = "catppuccin-macchiato",
-    tmux = "catppuccin_macchiato",
     kitty = "Catppuccin-Macchiato"
   },
   ["gruvbox"] = {
-    alacritty = "gruvbox-dark",
-    tmux = "gruvbox",
     kitty = "gruvbox-dark"
   },
   ["tokyonight"] = {
-    alacritty = "tokyo-night",
-    tmux = "tokyo-night",
     kitty = "tokyo-night"
   }
 }
@@ -755,10 +935,8 @@ function M.setup()
       -- Execute theme sync script with mappings as arguments
       vim.fn.jobstart({
         "bash", "-c", 
-        string.format("~/.dotfiles/scripts/sync-theme-from-nvim.sh '%s' '%s' '%s' '%s'", 
+        string.format("~/.dotfiles/scripts/sync-theme-from-nvim.sh '%s' '%s'", 
           colorscheme, 
-          theme_map.alacritty, 
-          theme_map.tmux, 
           theme_map.kitty)
       }, {
         detach = true,
@@ -787,65 +965,31 @@ cat > ~/.dotfiles/scripts/sync-theme-from-nvim.sh << 'EOF'
 #!/bin/bash
 
 # Neovim-driven theme synchronization script
-# Arguments: $1=nvim_theme $2=alacritty_theme $3=tmux_theme $4=kitty_theme
+# Arguments: $1=nvim_theme $2=kitty_theme
 
 NVIM_THEME="$1"
-ALACRITTY_THEME="$2"
-TMUX_THEME="$3" 
-KITTY_THEME="$4"
+KITTY_THEME="$2"
 
 # Log the theme change
-echo "$(date): Syncing themes - Neovim: $NVIM_THEME" >> ~/.dotfiles/logs/theme-sync.log
-
-# Update Alacritty theme if config exists
-if [ -f ~/.config/alacritty/alacritty.yml ]; then
-  # Update the import line or color scheme setting
-  if grep -q "^import:" ~/.config/alacritty/alacritty.yml; then
-    sed -i "s|import:.*|import: [\"~/.config/alacritty/themes/${ALACRITTY_THEME}.yml\"]|" ~/.config/alacritty/alacritty.yml
-  elif grep -q "colors:" ~/.config/alacritty/alacritty.yml; then
-    # If using inline colors, replace the entire colors section
-    # This is more complex and may need custom logic per theme
-    echo "Inline colors detected in Alacritty config - manual update needed"
-  fi
-fi
-
-# Update tmux theme if config exists and tmux is running
-if [ -f ~/.config/tmux/tmux.conf ]; then
-  # Update tmux catppuccin plugin setting
-  if grep -q "@catppuccin_flavour" ~/.config/tmux/tmux.conf; then
-    sed -i "s/set -g @catppuccin_flavour.*/set -g @catppuccin_flavour '${TMUX_THEME}'/" ~/.config/tmux/tmux.conf
-  fi
-  
-  # Reload tmux config if tmux is running
-  if command -v tmux &> /dev/null && tmux list-sessions &> /dev/null 2>&1; then
-    tmux source-file ~/.config/tmux/tmux.conf
-    
-    # Update all other nvim instances in tmux panes
-    tmux list-panes -a -F '#{pane_id} #{pane_current_command}' | grep -E "n?vim" | while read pane_id cmd; do
-      # Only send to other nvim instances, not the one that triggered this
-      if [ "$cmd" = "nvim" ] || [ "$cmd" = "vim" ]; then
-        tmux send-keys -t "$pane_id" ":silent! colorscheme $NVIM_THEME" C-m 2>/dev/null || true
-      fi
-    done
-  fi
-fi
+echo "$(date): Syncing themes - Neovim: $NVIM_THEME -> Kitty: $KITTY_THEME" >> ~/.dotfiles/logs/theme-sync.log
 
 # Update Kitty theme if config exists
 if [ -f ~/.config/kitty/kitty.conf ]; then
   # Update kitty theme include
   if grep -q "include.*theme" ~/.config/kitty/kitty.conf; then
     sed -i "s|include.*theme.*|include themes/${KITTY_THEME}.conf|" ~/.config/kitty/kitty.conf
+    echo "Updated Kitty theme to: $KITTY_THEME"
+  else
+    echo "No theme include found in Kitty config - add 'include themes/${KITTY_THEME}.conf' manually"
   fi
   
   # Signal kitty to reload config if running
   if command -v kitty &> /dev/null; then
     pkill -USR1 kitty 2>/dev/null || true
+    echo "Signaled Kitty to reload configuration"
   fi
-fi
-
-# Update terminal title to show current theme (optional)
-if [ -n "$TMUX" ]; then
-  tmux rename-window "nvim ($NVIM_THEME)" 2>/dev/null || true
+else
+  echo "Kitty config not found at ~/.config/kitty/kitty.conf"
 fi
 
 exit 0
@@ -864,10 +1008,18 @@ require('config.theme-sync').setup()
 EOF
 ```
 
-#### Step 15: Create Logs Directory and Test Setup
+#### Step 15: Create Local Configuration for Sensitive Data
 ```bash
 # Create logs directory for theme sync logging
 mkdir -p ~/.dotfiles/logs
+
+# Create local zsh configuration for sensitive data
+mkdir -p ~/.config/zsh
+if [ ! -f ~/.config/zsh/zshrc.local ]; then
+    cp ~/.dotfiles/templates/zshrc.local.template ~/.config/zsh/zshrc.local
+    echo "Created ~/.config/zsh/zshrc.local from template"
+    echo "Please edit this file to add your API keys and sensitive configuration"
+fi
 
 # Test the theme sync system
 cd ~/.dotfiles
@@ -881,7 +1033,11 @@ echo ""
 echo "Check that other applications update automatically."
 
 # Test the sync script directly
-./scripts/sync-theme-from-nvim.sh "catppuccin-mocha" "catppuccin-mocha" "catppuccin_mocha" "Catppuccin-Mocha"
+./scripts/sync-theme-from-nvim.sh "catppuccin-mocha" "Catppuccin-Mocha"
+
+echo ""
+echo "IMPORTANT: Edit ~/.config/zsh/zshrc.local to add your sensitive configuration"
+echo "This file is gitignored and safe for API keys and personal settings"
 ```
 
 ### Phase 6: Git Setup and Remote (15 minutes)
@@ -917,19 +1073,26 @@ git push -u origin main
 - [ ] Test all symlinks work correctly
 - [ ] Verify Neovim still functions properly
 - [ ] Test theme synchronization system (`:colorscheme catppuccin-latte`)
-- [ ] Verify theme propagation to terminal, tmux, and other tools
+- [ ] Verify theme propagation to Kitty terminal
+- [ ] **Test standardized key mappings**:
+  - [ ] `<C-hjkl>` navigation in Kitty windows
+  - [ ] `<S-hl>` tab navigation in Kitty
+  - [ ] `<C-S-v/s/x>` split management in Kitty
+  - [ ] Shell aliases: `q`, `e`, `reload`
 - [ ] Test shell aliases and functions
 - [ ] Check git configuration
+- [ ] **Edit ~/.config/zsh/zshrc.local to add your API keys and sensitive settings**
+- [ ] Test Oh My Zsh functionality and plugins
 
 ### Short-term (Week 1)
 - [ ] Add more colorscheme mappings to theme-sync.lua
-- [ ] Fine-tune theme propagation scripts for your specific tools
+- [ ] Fine-tune theme propagation for Kitty themes
 - [ ] Add SSH configuration template
 - [ ] Create host-specific branches for different machines
 - [ ] Add more shell utilities and aliases
 
 ### Long-term (Month 1)
-- [ ] Add configurations for other tools (tmux, zsh, etc.)
+- [ ] Add configurations for other tools (tmux, alacritty, etc.) as needed
 - [ ] Create automated setup scripts for new machines
 - [ ] Document all configurations and keybindings
 - [ ] Set up automated backups
