@@ -304,7 +304,7 @@
 | `<leader>W` | Save all | Save all buffers | **W**rite all |
 | `<leader>q` | Quit | Close current window | **Q**uit |
 | `<leader>Q` | Quit all | Exit Neovim (force) | **Q**uit all |
-| `<Esc>` | Clear highlights | Remove search highlighting | Escape |
+| `<C-l>` | Clear highlights | Remove search highlighting | Ctrl + **L**ight |
 
 ## Which Key Help
 

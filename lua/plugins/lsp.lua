@@ -25,8 +25,8 @@ return {
 
     -- Mason-lspconfig setup
     local mason_lspconfig = {
-      --ensure_installed = { "lua_ls", "pyright", "ts_ls", "markdown" }, -- Added tsserver
-      --automatic_installation = true,
+      ensure_installed = { "lua_ls", "pyright", "ts_ls" },
+      automatic_installation = true,
     }
 
     -- LSP server configurations

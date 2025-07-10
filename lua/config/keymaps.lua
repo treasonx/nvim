@@ -49,7 +49,7 @@ keymap("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move text up" })
 keymap("v", "p", '"_dP', { desc = "Paste without yanking" })
 
 -- Clear search highlighting (Esc in normal mode)
-keymap("n", "<Esc>", ":nohlsearch<CR>", { desc = "Clear search highlights" })
+keymap("n", "<C-l>", ":nohlsearch<CR>", { desc = "Clear search highlights" })
 
 -- Save file shortcuts
 keymap("n", "<C-s>", ":w<CR>", { desc = "Save file" })

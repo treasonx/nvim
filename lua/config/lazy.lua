@@ -31,5 +31,21 @@ require("lazy").setup({
   -- colorscheme that will be used when installing plugins.
   install = { colorscheme = { "habamax" } },
   -- automatically check for plugin updates
-  checker = { enabled = true },
+  checker = { enabled = true, notify = false },
+  -- automatically install updates when available
+  change_detection = { enabled = true, notify = false },
+})
+
+-- Auto-update plugins on startup
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    -- Check for updates after a short delay to avoid startup issues
+    vim.defer_fn(function()
+      local lazy_status = require("lazy.status")
+      if lazy_status.has_updates() then
+        vim.notify("Plugin updates available. Running sync...", vim.log.levels.INFO)
+        require("lazy").sync()
+      end
+    end, 1000) -- 1 second delay
+  end,
 })
